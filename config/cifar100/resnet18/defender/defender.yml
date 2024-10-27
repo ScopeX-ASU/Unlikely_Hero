@@ -1,0 +1,59 @@
+criterion:
+  name: ce
+
+optimizer:
+  name: adamw
+  lr: 0.002
+  weight_decay: 0.01
+
+scheduler:
+  name: cosine
+  lr_min: 0.00002
+
+run:
+  experiment: "cifar10_resnet18_GEMM_defender"
+  n_epochs: 100
+  batch_size: 256
+  use_cuda: 1
+  gpu_id: 2
+  deterministic: 1
+  log_interval: 200
+  train_noise: 0
+
+quantize:
+  quant_flag: True
+  N_bits: 8
+  N_bits_a: 8
+  scaling_range_in: 1.
+  scaling_range_out: 1.
+  
+noise:
+  noise_flag: False
+  noise_level: 0.005
+  output_noise_level: 0.005
+  random_state: 42
+
+defense:
+  eta: 1
+  locking_mode: "layerwise"
+  salience: "taylor-series"
+  protect_mode: "IS"
+
+checkpoint:
+  save_best_model_k: 3
+  checkpoint_dir: "cifar10/resnet19/pretrain"
+  model_comment: ""
+  resume: 0
+  restore_checkpoint: "checkpoint/cifar100/resnet18/pretrain/SparseBP_GEMM_ResNet18_N-8_Na-8__acc-60.22_epoch-194.pt"
+
+model:
+  name: "SparseBP_GEMM_ResNet18"
+  mode: "defender"
+  block_list: [8, 8]
+  act: relu
+  act_thres: 6
+  norm: bn
+
+debug:
+  verbose: 1
+

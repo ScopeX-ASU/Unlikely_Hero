@@ -1,0 +1,61 @@
+criterion:
+  name: ce
+
+optimizer:
+  name: adamw
+  lr: 0.002
+  weight_decay: 0.01
+
+scheduler:
+  name: cosine
+  lr_min: 0.00002
+
+run:
+  experiment: "cifar10_vgg8_GEMM_attacker"
+  n_epochs: 100
+  batch_size: 256
+  attack_sample_size: [16]
+  attack_mode: "grad"
+  use_cuda: 1
+  gpu_id: 0
+  deterministic: 1
+  log_interval: 200
+  train_noise: 0
+
+quantize:
+  quant_flag: True
+  N_bits: 8   # Quantization bit for weights
+  N_bits_a: 8 # Quantization bit for activations
+  scaling_range_in: 1.
+  scaling_range_out: 1.
+  
+noise:
+  noise_flag: True
+  noise_level: 0.005          # std of noise
+  output_noise_level: 0.005   # std of noise
+  random_state: 42
+
+
+defense:
+  eta: 1.5                    # Acceptable accuracy drop in Weight Locking
+  locking_mode: "layerwise"
+  salience: "first-order"     # Attacker use first order gradient to estimate sensitivity
+
+checkpoint:
+  save_best_model_k: 3
+  checkpoint_dir: "cifar10/vgg/pretrain"
+  model_comment: ""
+  resume: 0
+  restore_checkpoint: "checkpoint/cifar10/vgg/pretrain/SparseBP_GEMM_VGG8_N-8_Na-8__acc-88.00_epoch-192.pt"
+
+model:
+  name: "SparseBP_GEMM_VGG8"
+  mode: "attacker"
+  block_list: [8, 8]
+  act: relu
+  act_thres: 6
+  norm: bn
+
+debug:
+  verbose: 1
+

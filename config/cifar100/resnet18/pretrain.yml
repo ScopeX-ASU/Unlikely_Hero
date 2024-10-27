@@ -1,0 +1,49 @@
+criterion:
+  name: ce
+
+optimizer:
+  name: adamw
+  lr: 0.0001  # original 0.0002
+  weight_decay: 0.001
+
+scheduler:
+  name: cosine
+  lr_min: 0.0
+
+run:
+  experiment: "cifar100_resnet18_pretrain"
+  n_epochs: 200
+  batch_size: 32
+  use_cuda: 1
+  gpu_id: 0
+  deterministic: 1
+  log_interval: 200
+  train_noise: 0
+
+quantize:
+  quant_flag: True
+  N_bits: 8
+  N_bits_a: 8
+  scaling_range_in: 1.
+  scaling_range_out: 1.
+
+noise:
+  noise_flag: False     # Add noise to pretraining or not
+  noise_level: 0.005
+  output_noise_level: 0.005
+  weight_noise_std: 0.005
+
+checkpoint:
+  save_best_model_k: 3
+  checkpoint_dir: "cifar100/resnet18/pretrain"
+  model_comment: ""
+  resume: 0
+  restore_checkpoint: ""
+
+model:
+  name: "SparseBP_GEMM_ResNet18"
+  mode: "defender"
+
+debug:
+  verbose: 1
+
